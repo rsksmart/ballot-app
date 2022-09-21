@@ -6,6 +6,8 @@ async function main() {
 
   const cantSuscritpos = await sorteo.cantSuscriptos()
 
+  console.log('address', sorteo.address)
+
   console.log('cantidad de suscriptos', cantSuscritpos.toNumber())
 
   for (let i = 0; i < cantSuscritpos.toNumber(); i++) {

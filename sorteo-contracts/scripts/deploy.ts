@@ -3,11 +3,11 @@ import { ethers } from "hardhat";
 async function main() {
   const Sorteo = await ethers.getContractFactory("Sorteo");
   const sorteo = await Sorteo.deploy();
-  console.log(sorteo.address)
-  console.log(sorteo.deployTransaction.hash)
+  console.log('address', sorteo.address)
+  console.log('deployTx', sorteo.deployTransaction.hash)
   await sorteo.deployed();
 
-  console.log(sorteo.address);
+  console.log('success');
 }
 
 // We recommend this pattern to be able to use async/await everywhere

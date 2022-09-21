@@ -4,7 +4,7 @@ async function main() {
   const Sorteo = await ethers.getContractFactory("Sorteo");
   const sorteo = await Sorteo.attach('0x079653C904BAbaDf9eb625Ab07a8766aA75BE613')
 
-  const tx = await sorteo.sortear(10)
+  const tx = await sorteo.sortear(10, 3)
   console.log(tx)
   console.log(await tx.wait())
 }

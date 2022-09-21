@@ -20,13 +20,16 @@ contract Sorteo {
     estaSuscripto[msg.sender] = true;
   }
 
-  function sortear(uint salt) external {
+  function sortear(uint salt, uint winnersAmount) external {
+    ganadores = new address[](winnersAmount);
+
     address[] memory restantes = suscriptos;
     uint randomInt = uint(keccak256(abi.encodePacked(blockhash(block.number - 1), salt)));
-    for (uint256 i = 0; i < 3; i++) {
+
+    for (uint256 i = 0; i < winnersAmount; i++) {
       uint winner = randomInt % restantes.length;
 
-      ganadores.push(restantes[winner]);
+      ganadores[i] = restantes[winner];
 
       address[] memory nuevosRestantes = new address[](restantes.length - 1);
       uint k = 0;

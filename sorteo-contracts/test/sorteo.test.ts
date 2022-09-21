@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { Sorteo } from "../typechain-types";
 
 const deploySorteo = async () => {
   const Sorteo = await ethers.getContractFactory("Sorteo");
@@ -8,6 +9,28 @@ const deploySorteo = async () => {
 
   return { sorteo }
 }
+
+const inscribir = async () => {
+  const { sorteo } = await deploySorteo()
+
+  const signers = await ethers.getSigners().then(s => s.slice(0, 10))
+
+  for (const signer of signers) {
+    await sorteo.connect(signer).suscribirse().then(tx => tx.wait())
+  }
+
+  return { sorteo }
+}
+
+const testKGanadores = async (sorteo: Sorteo, k: number) => {
+  const ganadores = await sorteo.obtenerGanadores()
+
+  const ganadoresSet = new Set()
+  for (const ganador of ganadores) ganadoresSet.add(ganador)
+
+  expect(ganadoresSet.size).eq(k)
+}
+
 describe("Sorteo", function () {
   it('suscribirse', async () => {
     const { sorteo } = await deploySorteo()
@@ -26,23 +49,24 @@ describe("Sorteo", function () {
   })
 
   it('hacer sorteo', async () => {
-    const { sorteo } = await deploySorteo()
+    const { sorteo } = await inscribir()
 
-    const signers = await ethers.getSigners().then(s => s.slice(0, 10))
+    const cantGanadores = 3
 
-    for (const signer of signers) {
-      await sorteo.connect(signer).suscribirse().then(tx => tx.wait())
-    }
+    await sorteo.sortear(10, cantGanadores).then(tx => tx.wait)
 
-    await sorteo.sortear(10).then(tx => tx.wait)
+    await testKGanadores(sorteo, cantGanadores)
+  })
 
+  it('sortear doble', async () => {
+    const { sorteo } = await inscribir()
 
-    const ganadores = await sorteo.obtenerGanadores()
+    const cantGanadores = 3
 
-    const ganadoresSet = new Set()
-    for (const ganador of ganadores) ganadoresSet.add(ganador)
+    await sorteo.sortear(10, cantGanadores).then(tx => tx.wait)
+    await sorteo.sortear(10, cantGanadores).then(tx => tx.wait)
 
-    expect(ganadoresSet.size).eq(3)
+    await testKGanadores(sorteo, cantGanadores)
   })
 
   it('no suscribirse doble', async () => {
