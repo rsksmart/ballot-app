@@ -5,7 +5,8 @@ import "./App.css"
 const abi = [
   'function cantSuscriptos() external view returns(uint)',
   'function suscripto(uint i) external view returns(address)',
-  'function suscribirse() external'
+  'function suscribirse() external',
+  'function obtenerGanadores() public view returns(address[] memory)'
 ]
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
   const [tx, setTx] = useState()
   const [receipt, setReceipt] = useState()
 
+  const [ganadores, setGanadores] = useState([])
 
   const login = async () => {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -50,6 +52,8 @@ function App() {
     setReceipt(receipt)
   }
 
+  const getGanadores = () => sorteo.obtenerGanadores().then(setGanadores)
+
   return (
     <div className="App">
       <header className="App-header">
@@ -69,8 +73,13 @@ function App() {
         Una vez instalado y conectado recarga sta pagina
       </p>}
       <button onClick={suscribirse} disabled={!sorteo}>suscribirse!!!!</button>
-      {tx && <p><a href={`https://explorer.testnet.rsk.co/tx/${tx.hash}`} target='_blank'>{tx.hash}</a></p>}
+      {tx && <p><a href={`https://explorer.testnet.rsk.co/tx/${tx.hash}`} target='_blank' rel='noreferrer'>{tx.hash}</a></p>}
       {!receipt ? <p>Waiting for confirmation</p> : <p>confirmed! status: {receipt.status === 1 ? 'OK' : 'FAILED'}</p>}
+
+      <h3>Ganadores</h3>
+      <button onClick={getGanadores} disabled={!sorteo}>obtener ganadores</button>
+
+      {ganadores.map(g => <p key={g}>{g}</p>)}
     </div>
   );
 }
